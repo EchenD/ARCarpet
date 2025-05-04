@@ -1,52 +1,35 @@
-// Get base path from different sources with fallback
-const BASE_PATH = (() => {
-    // Try window.location first for most reliable path in production
-    const pathname = window.location.pathname;
-    // Check if we're in the project root or a subpage
-    if (pathname.includes('ARCarpet')) {
-        const basePath = pathname.split('/').slice(0, -1).join('/');
-        return basePath || '/ARCarpet';
-    }
-    // Development fallback
-    return import.meta.env?.BASE_URL || '/';
-})();
+import { config } from '../config/config.js';
 
-function addBasePath(path) {
-    // Don't modify absolute URLs
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-        return path;
-    }
-
-    // Clean the paths
-    const basePath = BASE_PATH.endsWith('/') ? BASE_PATH : `${BASE_PATH}/`;
+function resolvePath(path) {
+    // Remove leading slash if exists
     const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-
-    // For GitHub Pages, ensure we're using the correct domain
-    if (window.location.hostname.includes('github.io')) {
-        return `${window.location.origin}${basePath}${cleanPath}`;
-    }
-
-    return `${basePath}${cleanPath}`;
+    // Combine with base URL
+    const baseUrl = config.baseUrl.endsWith('/') ? config.baseUrl : `${config.baseUrl}/`;
+    return `${baseUrl}${cleanPath}`;
 }
 
 export async function loadCarpets() {
     try {
-        const response = await fetch(`${BASE_PATH}data/carpets.json`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        // Use config to build the correct path
+        const dataPath = resolvePath(`${config.paths.data}/carpets.json`);
+        const response = await fetch(dataPath);
 
-        // Add base path to all assets
-        return data.map(carpet => ({
+        if (!response.ok) {
+            throw new Error(`Failed to load data: ${response.status}`);
+        }
+
+        const carpets = await response.json();
+
+        // Process paths in the carpet data
+        return carpets.map(carpet => ({
             ...carpet,
-            glb: addBasePath(carpet.glb),
-            usdz: addBasePath(carpet.usdz),
-            thumbnail: addBasePath(carpet.thumbnail),
-            gallery: carpet.gallery.map(img => addBasePath(img))
+            glb: resolvePath(carpet.glb),
+            usdz: resolvePath(carpet.usdz),
+            thumbnail: resolvePath(carpet.thumbnail),
+            gallery: carpet.gallery.map(img => resolvePath(img))
         }));
     } catch (error) {
-        console.error('Failed to load carpets:', error);
+        console.error('Data loading error:', error);
         throw new Error('Could not load carpet data. Please try again later.');
     }
 }

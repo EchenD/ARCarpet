@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig(({ command, mode }) => ({
-    base: mode === 'development' ? '/' : '/ARCarpet/',
+    base: mode === 'development' ? '/' : './',
     publicDir: 'public',
     build: {
         outDir: 'dist',
