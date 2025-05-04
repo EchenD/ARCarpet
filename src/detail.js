@@ -1,4 +1,3 @@
-import './styles.css';
 import carpets from './data/carpets.json' assert { type: 'json' };
 
 const params = new URLSearchParams(location.search);
