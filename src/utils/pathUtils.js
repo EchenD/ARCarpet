@@ -1,22 +1,30 @@
 function getBasePath() {
-    // Try to get from window location
+    const isGitHubPages = window.location.hostname.includes('github.io');
     const path = window.location.pathname;
-    // If we're on the project page
-    if (path.includes('ARCarpet')) {
-        return '/ARCarpet/';
+
+    // GitHub Pages deployment
+    if (isGitHubPages) {
+        // Return full GitHub Pages path including /ARCarpet/public/
+        return path.includes('ARCarpet') ? '/ARCarpet/public/' : '/public/';
     }
+
     // Local development
     return '/';
 }
 
 export function resolveAssetPath(path) {
+    // Handle absolute URLs
+    if (path.startsWith('http')) {
+        return path;
+    }
+
     // Remove leading slash
     const cleanPath = path.startsWith('/') ? path.slice(1) : path;
     const basePath = getBasePath();
 
-    // Handle absolute URLs
-    if (path.startsWith('http')) {
-        return path;
+    // For HTML pages, don't include public
+    if (path.endsWith('.html')) {
+        return `${basePath.replace('public/', '')}${cleanPath}`;
     }
 
     return `${basePath}${cleanPath}`;
