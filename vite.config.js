@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig(({ mode }) => ({
-    base: mode === 'development' ? '/' : '/ARCarpet/public/',
+    base: mode === 'development' ? '/' : '/ARCarpet/', // <-- Only '/ARCarpet/' for GitHub Pages, '/' for others
     publicDir: 'public',
     build: {
         outDir: 'dist',
