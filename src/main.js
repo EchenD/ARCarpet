@@ -1,11 +1,8 @@
 async function loadCarpets() {
   let res;
   try {
-    // Use absolute path for dev server and production, handling both cases
-    // Remove leading slash so it works with both http://localhost:5173/ARCarpet/ and http://localhost:5173/
-    // This will resolve to http://localhost:5173/ARCarpet/src/data/carpets.json when using base: '/ARCarpet/'
-    const base = import.meta.env.BASE_URL || '/';
-    res = await fetch(`${base}src/data/carpets.json`, { cache: 'force-cache' });
+    // Use a relative path that works both locally and on host
+    res = await fetch('data/carpets.json', { cache: 'force-cache' });
     if (!res.ok) throw new Error('Not found');
     const carpets = await res.json();
     const container = document.getElementById('list');
