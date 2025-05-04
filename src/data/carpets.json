@@ -3,25 +3,25 @@
         "id": "carpet1",
         "title": "Persian Rug",
         "description": "Classic 2×3 m Persian design",
-        "glb": "/src/models/carpet1.glb",
-        "usdz": "/src/models/carpet1.usdz",
-        "thumbnail": "/src/textures/carpet1-thumb.jpg",
+        "glb": "src/models/carpet1.glb",
+        "usdz": "src/models/carpet1.usdz",
+        "thumbnail": "src/textures/carpet1-thumb.jpg",
         "gallery": [
-            "/src/textures/carpet1-thumb.jpg",
-            "/src/textures/carpet1-1.jpg",
-            "/src/textures/carpet1-2.jpg"
+            "src/textures/carpet1-thumb.jpg",
+            "src/textures/carpet1-1.jpg",
+            "src/textures/carpet1-2.jpg"
         ]
     },
     {
         "id": "carpet2",
         "title": "Modern Circle",
         "description": "1.5 m diameter modern circle",
-        "glb": "/src/models/carpet2.glb",
-        "usdz": "/src/models/carpet2.usdz",
-        "thumbnail": "/src/textures/carpet2-thumb.jpg",
+        "glb": "src/models/carpet2.glb",
+        "usdz": "src/models/carpet2.usdz",
+        "thumbnail": "src/textures/carpet2-thumb.jpg",
         "gallery": [
-            "/src/textures/carpet2-thumb.jpg",
-            "/src/textures/carpet2-1.jpg"
+            "src/textures/carpet2-thumb.jpg",
+            "src/textures/carpet2-1.jpg"
         ]
     }
 ]
