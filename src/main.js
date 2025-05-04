@@ -2,7 +2,7 @@ async function loadCarpets() {
   let res;
   try {
     // Use a relative path that works both locally and on host
-    res = await fetch('data/carpets.json', { cache: 'force-cache' });
+    res = await fetch('src/data/carpets.json', { cache: 'force-cache' });
     if (!res.ok) throw new Error('Not found');
     const carpets = await res.json();
     const container = document.getElementById('list');
