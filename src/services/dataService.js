@@ -1,20 +1,14 @@
 // Get base path from different sources with fallback
 const BASE_PATH = (() => {
-    // Try import.meta.env first (Vite dev)
-    if (import.meta.env?.BASE_URL) {
-        return import.meta.env.BASE_URL;
+    // Try window.location first for most reliable path in production
+    const pathname = window.location.pathname;
+    // Check if we're in the project root or a subpage
+    if (pathname.includes('ARCarpet')) {
+        const basePath = pathname.split('/').slice(0, -1).join('/');
+        return basePath || '/ARCarpet';
     }
-
-    // Try to get from document.baseURI (production)
-    try {
-        const baseUri = new URL(document.baseURI);
-        return baseUri.pathname;
-    } catch (e) {
-        console.warn('Failed to get base path from document.baseURI');
-    }
-
-    // Fallback to deployed path
-    return '/ARCarpet/';
+    // Development fallback
+    return import.meta.env?.BASE_URL || '/';
 })();
 
 function addBasePath(path) {
@@ -22,9 +16,16 @@ function addBasePath(path) {
     if (path.startsWith('http://') || path.startsWith('https://')) {
         return path;
     }
-    // Clean up double slashes and ensure proper formatting
+
+    // Clean the paths
     const basePath = BASE_PATH.endsWith('/') ? BASE_PATH : `${BASE_PATH}/`;
     const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+
+    // For GitHub Pages, ensure we're using the correct domain
+    if (window.location.hostname.includes('github.io')) {
+        return `${window.location.origin}${basePath}${cleanPath}`;
+    }
+
     return `${basePath}${cleanPath}`;
 }
 
