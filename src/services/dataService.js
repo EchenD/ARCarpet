@@ -1,15 +1,31 @@
-const BASE_PATH = import.meta.env.BASE_URL.endsWith('/')
-    ? import.meta.env.BASE_URL
-    : `${import.meta.env.BASE_URL}/`;
+// Get base path from different sources with fallback
+const BASE_PATH = (() => {
+    // Try import.meta.env first (Vite dev)
+    if (import.meta.env?.BASE_URL) {
+        return import.meta.env.BASE_URL;
+    }
+
+    // Try to get from document.baseURI (production)
+    try {
+        const baseUri = new URL(document.baseURI);
+        return baseUri.pathname;
+    } catch (e) {
+        console.warn('Failed to get base path from document.baseURI');
+    }
+
+    // Fallback to deployed path
+    return '/ARCarpet/';
+})();
 
 function addBasePath(path) {
     // Don't modify absolute URLs
     if (path.startsWith('http://') || path.startsWith('https://')) {
         return path;
     }
-    // Remove leading slash if exists
+    // Clean up double slashes and ensure proper formatting
+    const basePath = BASE_PATH.endsWith('/') ? BASE_PATH : `${BASE_PATH}/`;
     const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-    return `${BASE_PATH}${cleanPath}`;
+    return `${basePath}${cleanPath}`;
 }
 
 export async function loadCarpets() {

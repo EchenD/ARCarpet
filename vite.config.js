@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
-export default defineConfig({
-    base: '/ARCarpet/',
+export default defineConfig(({ command }) => ({
+    base: command === 'serve' ? '/' : '/ARCarpet/',
     publicDir: 'public',
     build: {
         outDir: 'dist',
@@ -21,4 +21,4 @@ export default defineConfig({
         port: 5173,
         host: true
     }
-});
+}));
