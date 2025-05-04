@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <title>Carpet AR</title>
+  <script type="module" crossorigin src="/ARCarpet/assets/detail-Ddcq35Gn.js"></script>
+  <link rel="modulepreload" crossorigin href="/ARCarpet/assets/dataService-BF1Cczdg.js">
+  <link rel="stylesheet" crossorigin href="/ARCarpet/assets/dataService-COOB_zPK.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="back-link">← Back</a>
+        <h1 id="title"></h1>
+    </header>
+    <main>
+        <div id="gallery" class="gallery"></div>
+        <div class="ar-section">
+            <button id="show-ar" class="ar-btn">Show in AR</button>
+            <model-viewer id="ar-viewer" alt="AR Carpet" ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed"
+                camera-controls style="width:100%; height:60vh; display:none;">
+            </model-viewer>
+        </div>
+        <div id="desc" class="desc"></div>
+        <div class="detail-nav">
+            <button id="prev" class="nav-btn">Previous</button>
+            <button id="next" class="nav-btn">Next</button>
+        </div>
+    </main>
+</body>
+
+</html>

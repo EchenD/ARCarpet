@@ -1,0 +1,17 @@
+import{l as w}from"./dataService-BF1Cczdg.js";async function f(){if("xr"in navigator)try{return await navigator.xr.isSessionSupported("immersive-ar")}catch(c){return console.warn("WebXR AR check failed:",c),!1}return!!(/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream||/Android/i.test(navigator.userAgent)&&"googleDownloadableContents"in window)}let a=[];const E=new URLSearchParams(location.search);let r=0;const o=document.getElementById("ar-viewer"),b=document.getElementById("title"),A=document.getElementById("desc"),y=document.getElementById("gallery"),d=document.getElementById("show-ar"),L=document.getElementById("prev"),x=document.getElementById("next");let i=0;const s=document.createElement("div");s.id="preview";y.parentNode.insertBefore(s,y);async function I(){try{if(a=await w(),!Array.isArray(a)||!a.length)throw new Error("No carpets found")}catch(e){console.error(e),document.body.innerHTML=`
+            <div class="error-message">
+                <p>${e.message}</p>
+                <button onclick="window.location.reload()">Try Again</button>
+            </div>`;return}r=a.findIndex(e=>e.id===E.get("id")),r<0&&(r=0),document.addEventListener("keydown",e=>{e.key==="ArrowLeft"&&m(-1),e.key==="ArrowRight"&&m(1)});function m(e){const t=a[r].gallery||[];t.length&&(i=(i+e+t.length)%t.length,u(t))}function u(e){if(!e.length)return;s.innerHTML=`
+            <div class="preview-container">
+                <img src="${e[i]}" class="preview-img" alt="Selected carpet preview" />
+                ${e.length>1?`
+                    <button class="preview-nav prev" aria-label="Previous image">‹</button>
+                    <button class="preview-nav next" aria-label="Next image">›</button>
+                `:""}
+            </div>
+        `,y.innerHTML=e.map((n,l)=>`
+            <button class="thumb-btn${l===i?" selected":""}" data-idx="${l}">
+                <img src="${n}" class="thumb-img" alt="Carpet thumbnail ${l+1}" loading="lazy" />
+            </button>
+        `).join(""),e.forEach(n=>{const l=new Image;l.src=n});const t=n=>{i=(i+n+e.length)%e.length,u(e)};e.length>1&&(s.querySelector(".preview-nav.prev").onclick=()=>t(-1),s.querySelector(".preview-nav.next").onclick=()=>t(1)),y.querySelectorAll(".thumb-btn").forEach(n=>{n.onclick=()=>{i=Number(n.dataset.idx),u(e)}});let g=0;s.addEventListener("touchstart",n=>{g=n.touches[0].clientX},{passive:!0}),s.addEventListener("touchend",n=>{const h=n.changedTouches[0].clientX-g;Math.abs(h)>50&&t(h>0?-1:1)},{passive:!0})}let c=null,v=null;async function p(e){const t=a[e];b.textContent=t.title,A.textContent=t.description,u(t.gallery||[]);const g=await f();d.style.display=g?"inline-flex":"none",o.style.display="none",o.src=t.glb,o.setAttribute("ios-src",t.usdz),c&&o.removeEventListener("error",c),v&&o.removeEventListener("load",v),c=n=>{console.error("Error loading model:",n),d.style.display="none"},o.addEventListener("error",c,{once:!0})}d.addEventListener("click",async()=>{try{d.classList.add("loading"),o.style.display="",await new Promise(e=>{v=()=>e(),o.addEventListener("load",v,{once:!0})}),o.activateAR&&await o.activateAR()}catch(e){console.error("Error activating AR:",e),o.style.display="none"}finally{d.classList.remove("loading"),d.style.display="none"}}),L.addEventListener("click",()=>{r=(r-1+a.length)%a.length,i=0,p(r)}),x.addEventListener("click",()=>{r=(r+1)%a.length,i=0,p(r)}),p(r)}I();
