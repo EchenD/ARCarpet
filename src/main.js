@@ -1,5 +1,3 @@
-import './styles.css';
-
 async function loadCarpets() {
   let res;
   try {
