@@ -19,6 +19,18 @@ const previewEl = document.createElement('div');
 previewEl.id = 'preview';
 galleryEl.parentNode.insertBefore(previewEl, galleryEl);
 
+// Keyboard navigation (add only once)
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') navigateGalleryGlobal(-1);
+    if (e.key === 'ArrowRight') navigateGalleryGlobal(1);
+});
+function navigateGalleryGlobal(direction) {
+    const images = carpets[idx].gallery || [];
+    if (!images.length) return;
+    selectedImgIdx = (selectedImgIdx + direction + images.length) % images.length;
+    renderGallery(images);
+}
+
 function renderGallery(images) {
     if (!images.length) return;
 
@@ -67,12 +79,6 @@ function renderGallery(images) {
         };
     });
 
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') navigateGallery(-1);
-        if (e.key === 'ArrowRight') navigateGallery(1);
-    });
-
     // Touch swipe support
     let touchStartX = 0;
     previewEl.addEventListener('touchstart', (e) => {
@@ -87,6 +93,9 @@ function renderGallery(images) {
         }
     }, { passive: true });
 }
+
+let modelViewerErrorHandler = null;
+let modelViewerLoadHandler = null;
 
 async function loadCarpet(i) {
     const c = carpets[i];
@@ -103,11 +112,15 @@ async function loadCarpet(i) {
     mv.src = c.glb;
     mv.setAttribute('ios-src', c.usdz);
 
-    // Add error handling for model loading
-    mv.addEventListener('error', (error) => {
+    // Remove previous listeners to avoid stacking
+    if (modelViewerErrorHandler) mv.removeEventListener('error', modelViewerErrorHandler);
+    if (modelViewerLoadHandler) mv.removeEventListener('load', modelViewerLoadHandler);
+
+    modelViewerErrorHandler = (error) => {
         console.error('Error loading model:', error);
         showArBtn.style.display = 'none';
-    }, { once: true });
+    };
+    mv.addEventListener('error', modelViewerErrorHandler, { once: true });
 }
 
 showArBtn.addEventListener('click', async () => {
@@ -117,7 +130,9 @@ showArBtn.addEventListener('click', async () => {
 
         // Wait for model to load before activating AR
         await new Promise((resolve) => {
-            mv.addEventListener('load', resolve, { once: true });
+            // Use 'load' event for <model-viewer>
+            modelViewerLoadHandler = () => resolve();
+            mv.addEventListener('load', modelViewerLoadHandler, { once: true });
         });
 
         if (mv.activateAR) {
@@ -135,14 +150,12 @@ showArBtn.addEventListener('click', async () => {
 prevBtn.addEventListener('click', () => {
     idx = (idx - 1 + carpets.length) % carpets.length;
     selectedImgIdx = 0;
-    showArBtn.style.display = '';
     loadCarpet(idx);
 });
 
 nextBtn.addEventListener('click', () => {
     idx = (idx + 1) % carpets.length;
     selectedImgIdx = 0;
-    showArBtn.style.display = '';
     loadCarpet(idx);
 });
 
