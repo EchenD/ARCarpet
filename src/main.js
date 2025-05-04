@@ -1,4 +1,5 @@
 import { loadCarpets } from './services/dataService.js';
+import { resolveAssetPath } from './utils/pathUtils.js';
 
 async function init() {
   const container = document.getElementById('list');
@@ -12,7 +13,7 @@ async function init() {
                 <div class="card-content">
                     <h2>${c.title}</h2>
                     <p>${c.description}</p>
-                    <a class="ar-btn" href="detail.html?id=${c.id}">View Details</a>
+                    <a class="ar-btn" href="${resolveAssetPath('detail.html')}?id=${c.id}">View Details</a>
                 </div>
             </div>
         `).join('');
