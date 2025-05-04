@@ -1,10 +1,8 @@
 async function loadCarpets() {
   let res;
   try {
-    // Use a relative path that works both locally and on host
-    // For production, use the base path
-    const dataPath = import.meta.env.PROD ? '/ARCarpet/src/data/carpets.json' : 'src/data/carpets.json';
-    res = await fetch(dataPath);
+    // Always use base-relative path for production and dev
+    res = await fetch('/ARCarpet/src/data/carpets.json');
     if (!res.ok) throw new Error('Not found');
     const carpets = await res.json();
     const container = document.getElementById('list');
