@@ -1,4 +1,5 @@
 import carpets from './data/carpets.json' assert { type: 'json' };
+import { isARSupported } from './utils/arCheck.js';
 
 const params = new URLSearchParams(location.search);
 let idx = carpets.findIndex(c => c.id === params.get('id'));
@@ -87,20 +88,48 @@ function renderGallery(images) {
     }, { passive: true });
 }
 
-function loadCarpet(i) {
+async function loadCarpet(i) {
     const c = carpets[i];
     titleEl.textContent = c.title;
     descEl.textContent = c.description;
     renderGallery(c.gallery || []);
+
+    // Check AR support before showing button
+    const arSupported = await isARSupported();
+    showArBtn.style.display = arSupported ? 'inline-flex' : 'none';
+
+    // Setup model viewer with error handling
+    mv.style.display = 'none';
     mv.src = c.glb;
     mv.setAttribute('ios-src', c.usdz);
-    mv.style.display = 'none';
+
+    // Add error handling for model loading
+    mv.addEventListener('error', (error) => {
+        console.error('Error loading model:', error);
+        showArBtn.style.display = 'none';
+    }, { once: true });
 }
 
-showArBtn.addEventListener('click', () => {
-    mv.style.display = '';
-    mv.activateAR && mv.activateAR();
-    showArBtn.style.display = 'none';
+showArBtn.addEventListener('click', async () => {
+    try {
+        showArBtn.classList.add('loading');
+        mv.style.display = '';
+
+        // Wait for model to load before activating AR
+        await new Promise((resolve) => {
+            mv.addEventListener('load', resolve, { once: true });
+        });
+
+        if (mv.activateAR) {
+            await mv.activateAR();
+        }
+    } catch (error) {
+        console.error('Error activating AR:', error);
+        mv.style.display = 'none';
+    } finally {
+        showArBtn.classList.remove('loading');
+        showArBtn.style.display = 'none';
+    }
 });
 
 prevBtn.addEventListener('click', () => {
